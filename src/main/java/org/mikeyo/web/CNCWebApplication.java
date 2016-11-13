@@ -8,6 +8,7 @@ import spark.Route;
 import spark.servlet.SparkApplication;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static spark.Spark.get;
 import static spark.Spark.post;
 
 /**
@@ -22,7 +23,12 @@ public class CNCWebApplication implements SparkApplication {
 
     @Override
     public void init() {
+        // add a temp reading
         post("/temperature/:sensorName", map((req, res) -> this.temperatureResource.addTemperatureReading(req)));
+        // get temp readings for a sensor
+        get("/temperature/:sensorName", map((req, res) -> this.temperatureResource.getTemperatureReadings(req)));
+        // get all temp readings
+        get("/temperature", map((req, res) -> this.temperatureResource.getAllTemperatureReadings()));
     }
 
     private Route map(final Converter converter) {

@@ -9,6 +9,10 @@ import org.junit.BeforeClass;
 import org.mikeyo.web.WebConfig;
 import org.mikeyo.web.WebDriver;
 
+/**
+ * Base class for unit tests that need the spark web server running and are using RestAssured to
+ * test the rest endpoints.
+ */
 public class ResourceBase {
     private static WebDriver driver;
 

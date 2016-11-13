@@ -2,37 +2,60 @@ package org.mikeyo.web.resource;
 
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
+import com.google.common.collect.MultimapBuilder;
+import com.google.common.collect.SetMultimap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import org.mikeyo.web.Response;
 import org.mikeyo.web.ResponseCreator;
 import org.mikeyo.web.model.TemperatureReading;
-
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import spark.Request;
 
 /**
- * Class to capture
+ * web resource for recording/retrieving temperature sensor readings
+ *
+ * readings are recorded in memory and are not persisted anywhere. That meand that recordings are kept
+ * as long as the web server is alive.
  */
 public class TemperatureResource {
-    // TODO: order the temperatures by the readTime
-    private List<TemperatureReading> temps = Lists.newArrayList();
+    private static final Logger LOG = LoggerFactory.getLogger(TemperatureResource.class);
+    private SetMultimap<String, TemperatureReading> temperatureReadingsBySensor;
     private Gson gson;
 
     public TemperatureResource() {
         this.gson = new GsonBuilder()
                 .disableHtmlEscaping()
                 .create();
+        // want to maintain natural ordering of values for each sensor
+        this.temperatureReadingsBySensor = MultimapBuilder.SetMultimapBuilder
+                .hashKeys()
+                .treeSetValues()
+                .build();
+    }
+
+    /**
+     * @return all sensor readings to date
+     */
+    public ResponseCreator getAllTemperatureReadings() {
+        LOG.info("Get all temp readings request.");
+        return Response.ok(gson.toJson(this.temperatureReadingsBySensor.values()));
     }
 
     /**
      * @return the set of temperature readings
      */
-    public List<TemperatureReading> getTemperatureReadings() {
-        return temps;
+    public ResponseCreator getTemperatureReadings(final Request request) {
+        LOG.info("Get all temp readings request {}.", request.body());
+        final String sensorName = request.params("sensorName");
+        if(Strings.isNullOrEmpty(sensorName)) {
+            return Response.badRequest(gson.toJson("sensor name is null or empty."));
+        }
+
+        return Response.ok(gson.toJson(this.temperatureReadingsBySensor.get(sensorName)));
     }
 
     /**
@@ -41,7 +64,7 @@ public class TemperatureResource {
      * @return the sensor reading as understood by the server
      */
     public ResponseCreator addTemperatureReading(final Request request) {
-
+        LOG.info("Get all temp readings for sensor request {}.", request.body());
         final String sensorName = request.params("sensorName");
 
         final Double tempReading;
@@ -56,7 +79,12 @@ public class TemperatureResource {
         }
 
         final TemperatureReading temperatureReading = new TemperatureReading(sensorName, tempReading);
-        this.temps.add(temperatureReading);
-        return Response.created(gson.toJson(temperatureReading));
+        boolean added = this.temperatureReadingsBySensor.put(temperatureReading.getSensorName(), temperatureReading);
+
+        if(added) {
+            return Response.created(gson.toJson(temperatureReading));
+        } else {
+            return Response.noContent();
+        }
     }
 }

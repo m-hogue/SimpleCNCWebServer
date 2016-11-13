@@ -7,9 +7,11 @@ import java.util.Objects;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * A class to represent a simple temperature reading from a sensor
+ * A class to represent a simple temperature reading from a sensor.
+ *
+ * The temperature units are "as is".
  */
-public class TemperatureReading implements SensorReading {
+public class TemperatureReading implements SensorReading, Comparable<TemperatureReading> {
     private final String sensorName;
     private final Double tempReading;
     private final Date readTime;
@@ -19,11 +21,12 @@ public class TemperatureReading implements SensorReading {
         this.sensorName = checkNotNull(sensorName);
         this.tempReading = checkNotNull(tempReading);
         // read time is assumed to be the time the server receives the reading.
+        // We could instead have the arduino tell us what the read time is. Depends on what the read semantics are.
         this.readTime = Date.from(Instant.now());
     }
 
     /**
-     * @return the temperature in fahrenheit
+     * @return the temperature
      */
     public Double getTempReading() {
         return this.tempReading;
@@ -62,5 +65,16 @@ public class TemperatureReading implements SensorReading {
     @Override
     public int hashCode() {
         return Objects.hash(getSensorName(), getTempReading(), getReadTime());
+    }
+
+    /**
+     * The natural ordering of {@link TemperatureReading}s are the ordering of read times.
+     *
+     * @param that the object to compare to
+     * @return the natural comparison between object sensor read times
+     */
+    @Override
+    public int compareTo(final TemperatureReading that) {
+        return getReadTime().compareTo(that.getReadTime());
     }
 }

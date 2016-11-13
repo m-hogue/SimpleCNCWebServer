@@ -20,6 +20,13 @@ public class Response {
         };
     }
 
+    public static ResponseCreator noContent() {
+        return (req, res) -> {
+            res.status(204); // no content
+            return "";
+        };
+    }
+
     public static ResponseCreator badRequest(final String body) {
         return (req, res) -> {
             res.status(400); // bad request
