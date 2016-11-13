@@ -11,13 +11,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class TemperatureReading implements SensorReading {
     private final String sensorName;
-    private final Double tempInFahrenheit;
+    private final Double tempReading;
     private final Date readTime;
 
 
-    public TemperatureReading(final String sensorName, final Double tempInFahrenheit) {
+    public TemperatureReading(final String sensorName, final Double tempReading) {
         this.sensorName = checkNotNull(sensorName);
-        this.tempInFahrenheit = checkNotNull(tempInFahrenheit);
+        this.tempReading = checkNotNull(tempReading);
         // read time is assumed to be the time the server receives the reading.
         this.readTime = Date.from(Instant.now());
     }
@@ -25,8 +25,8 @@ public class TemperatureReading implements SensorReading {
     /**
      * @return the temperature in fahrenheit
      */
-    public Double getTempInFahrenheit() {
-        return this.tempInFahrenheit;
+    public Double getTempReading() {
+        return this.tempReading;
     }
 
     /**
@@ -55,12 +55,12 @@ public class TemperatureReading implements SensorReading {
         }
         TemperatureReading that = (TemperatureReading) o;
         return Objects.equals(getSensorName(), that.getSensorName()) &&
-                Objects.equals(getTempInFahrenheit(), that.getTempInFahrenheit()) &&
+                Objects.equals(getTempReading(), that.getTempReading()) &&
                 Objects.equals(getReadTime(), that.getReadTime());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getSensorName(), getTempInFahrenheit(), getReadTime());
+        return Objects.hash(getSensorName(), getTempReading(), getReadTime());
     }
 }

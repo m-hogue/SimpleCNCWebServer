@@ -22,12 +22,7 @@ public class CNCWebApplication implements SparkApplication {
 
     @Override
     public void init() {
-        post("/temperature/:sensorName", map((req, res) -> {
-            final String sensorName = req.params("sensorName");
-            final Double tempReading = req.attribute("temperature");
-
-            return this.temperatureResource.addTemperatureReading(sensorName, tempReading);
-        }));
+        post("/temperature/:sensorName", map((req, res) -> this.temperatureResource.addTemperatureReading(req)));
     }
 
     private Route map(final Converter converter) {
