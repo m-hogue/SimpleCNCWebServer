@@ -11,6 +11,7 @@ import spark.Spark;
 
 import static spark.Spark.awaitInitialization;
 import static spark.Spark.port;
+import static spark.Spark.staticFileLocation;
 
 public class WebDriver {
     private static final Logger LOG = LoggerFactory.getLogger(WebDriver.class);
@@ -24,6 +25,7 @@ public class WebDriver {
     public void start() {
         // set the port for the web server
         port(this.config.getInt(WebConfig.WEB_PORT.getKey()));
+        staticFileLocation("/public");
 
         // resources
         final TemperatureResource temperatureResource = new TemperatureResource();
