@@ -27,4 +27,4 @@ We care about sensor name and the actual reading. There's currently no validatio
    + RestAssured [https://github.com/rest-assured/rest-assured]
  - Other
    + Gulp [http://gulpjs.com/]
-   + NPM [Node Package Manager]
+   + NPM [Node Package Manager, https://www.npmjs.com/]
