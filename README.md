@@ -19,12 +19,12 @@ We care about sensor name and the actual reading. There's currently no validatio
  
 ### Technologies
  - Web
-   + Boostrap
-   + ReactJS
+   + Boostrap [http://getbootstrap.com/]
+   + ReactJS [https://facebook.github.io/react/]
  - Server
-   + SparkJava Web Server
-   + Typesafe Config
-   + RestAssured
+   + SparkJava Web Server [http://sparkjava.com/]
+   + Typesafe Config [https://github.com/typesafehub/config]
+   + RestAssured [https://github.com/rest-assured/rest-assured]
  - Other
-   + Gulp 
+   + Gulp [http://gulpjs.com/]
    + NPM [Node Package Manager]
