@@ -17,3 +17,10 @@ The REST endpoints looks like so:
 
 We care about sensor name and the actual reading. There's currently no validation on the temperature reading. Right now, read times are set by the server. We can alter this behavior if necessary.
  
+### Technologies
+ - SparkJava Web Server
+ - ReactJS
+ - Typesafe Config
+ - Gulp
+ - NPM [Node Package Manager]
+ - RestAssured
