@@ -23,16 +23,38 @@ gulp.task('clean', function(cb) {
   return del(['./public'], cb);
 });
 
-gulp.task('inject', ['vendor', 'scripts'], function() {
+
+gulp.task('inject', ['clean', 'vendor', 'scripts', 'css', 'favicon'], function() {
   var vendor = gulp.src('./public/scripts/vendor*.js', {read: false});
   var scripts = gulp.src('./public/scripts/scripts*.js', {read: false});
+  var css = gulp.src('./public/css/*css', {read: false});
+  var favicon = gulp.src('./public/favicon/*.png', {read: false});
+
 
   gulp.src('./webapp/index.html')
-    .pipe(inject(series(vendor, scripts), {ignorePath: '/public'}))
+    .pipe(inject(series(vendor, scripts, css, favicon), {ignorePath: '/public'}))
     .pipe(gulp.dest('./public'));
 });
 
-gulp.task('vendor', function() {
+gulp.task('css', ['clean'], function() {
+    var css = gulp.src([
+            './node_modules/bootstrap/dist/css/bootstrap.css',
+            './node_modules/bootstrap/dist/css/bootstrap-theme.css',
+            './webapp/css/app.scss'
+        ]).pipe(gulp.dest('./public/css'));
+    return css;
+});
+
+gulp.task('favicon', ['clean'], function() {
+    var fav = gulp.src([
+            './webapp/icon/favicon-16x16.png',
+            './webapp/icon/favicon-32x32.png',
+            './webapp/icon/favicon-96x96.png',
+        ]).pipe(gulp.dest('./public/favicon'));
+    return fav;
+});
+
+gulp.task('vendor', ['clean'], function() {
   var b = browserify({debug: !production});
 
   getNPMPackageIds().forEach(function(id) {
@@ -42,7 +64,7 @@ gulp.task('vendor', function() {
   return bundle('vendor.js', b);
 });
 
-gulp.task('scripts', function() {
+gulp.task('scripts', ['clean'], function() {
   var b = browserify({debug: !production})
     .require('./webapp/js/app.js', {entry: true})
     .transform(babelify);

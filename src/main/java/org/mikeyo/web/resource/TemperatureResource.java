@@ -3,7 +3,8 @@ package org.mikeyo.web.resource;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.MultimapBuilder;
-import com.google.common.collect.SetMultimap;
+import com.google.common.collect.Sets;
+import com.google.common.collect.SortedSetMultimap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -12,6 +13,8 @@ import org.mikeyo.web.ResponseCreator;
 import org.mikeyo.web.model.TemperatureReading;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.SortedSet;
 
 import spark.Request;
 
@@ -23,7 +26,8 @@ import spark.Request;
  */
 public class TemperatureResource {
     private static final Logger LOG = LoggerFactory.getLogger(TemperatureResource.class);
-    private SetMultimap<String, TemperatureReading> temperatureReadingsBySensor;
+    private SortedSetMultimap<String, TemperatureReading> temperatureReadingsBySensor;
+    private SortedSet<TemperatureReading> orderedTemperatureReadings;
     private Gson gson;
 
     public TemperatureResource() {
@@ -31,18 +35,28 @@ public class TemperatureResource {
                 .disableHtmlEscaping()
                 .create();
         // want to maintain natural ordering of values for each sensor
-        this.temperatureReadingsBySensor = MultimapBuilder.SetMultimapBuilder
-                .hashKeys()
+        this.temperatureReadingsBySensor = MultimapBuilder.SortedSetMultimapBuilder
+                .treeKeys()
                 .treeSetValues()
                 .build();
+        this.orderedTemperatureReadings = Sets.newTreeSet();
     }
 
     /**
      * @return all sensor readings to date
      */
-    public ResponseCreator getAllTemperatureReadings() {
+    public ResponseCreator getAllTemperatureReadings(final Request request) {
         LOG.info("Get all temp readings request.");
-        return Response.ok(gson.toJson(this.temperatureReadingsBySensor.values()));
+        final String limitParam = request.queryParams("limit");
+        if(Strings.isNullOrEmpty(limitParam)) {
+            return Response.ok(gson.toJson(this.orderedTemperatureReadings));
+        }
+
+        final Integer limit = Integer.valueOf(limitParam);
+        return Response.ok(gson.toJson(this.orderedTemperatureReadings
+                .parallelStream()
+                .limit(limit)
+                .toArray()));
     }
 
     /**
@@ -79,6 +93,7 @@ public class TemperatureResource {
         }
 
         final TemperatureReading temperatureReading = new TemperatureReading(sensorName, tempReading);
+        this.orderedTemperatureReadings.add(temperatureReading);
         boolean added = this.temperatureReadingsBySensor.put(temperatureReading.getSensorName(), temperatureReading);
 
         if(added) {

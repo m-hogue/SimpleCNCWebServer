@@ -55,11 +55,11 @@ public class TemperatureResourceTest extends ResourceBase {
                 .then()
                 .statusCode(200)
                 .body("size()", is(2))
-                .body("[0].sensorName", equalTo("sensor2"))
-                .body("[0].tempReading", is(-30f))
+                .body("[0].sensorName", equalTo("sensor1"))
+                .body("[0].tempReading", is(45.5f))
                 .body("[0].readTime", notNullValue())
-                .body("[1].sensorName", equalTo("sensor1"))
-                .body("[1].tempReading", is(45.5f))
+                .body("[1].sensorName", equalTo("sensor2"))
+                .body("[1].tempReading", is(-30f))
                 .body("[1].readTime", notNullValue());
     }
 }

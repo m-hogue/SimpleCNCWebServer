@@ -75,6 +75,6 @@ public class TemperatureReading implements SensorReading, Comparable<Temperature
      */
     @Override
     public int compareTo(final TemperatureReading that) {
-        return getReadTime().compareTo(that.getReadTime());
+        return that.getReadTime().compareTo(getReadTime());
     }
 }

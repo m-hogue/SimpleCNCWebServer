@@ -28,7 +28,7 @@ public class CNCWebApplication implements SparkApplication {
         // get temp readings for a sensor
         get("/temperature/:sensorName", map((req, res) -> this.temperatureResource.getTemperatureReadings(req)));
         // get all temp readings
-        get("/temperature", map((req, res) -> this.temperatureResource.getAllTemperatureReadings()));
+        get("/temperature", map((req, res) -> this.temperatureResource.getAllTemperatureReadings(req)));
     }
 
     private Route map(final Converter converter) {
